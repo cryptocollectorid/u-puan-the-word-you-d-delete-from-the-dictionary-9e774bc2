@@ -12,12 +12,36 @@ and it is not the first word the field would think of.
 import os
 
 WORD = "defenestration"
+OUTPUT_PATH = "/output/entry.txt"
+MIN_LEN = 1
+MAX_LEN = 77
+
+
+def validate_word(word):
+    """Check the entry against the competition gate: one word, 1-77 chars."""
+    if not word or not word.strip():
+        raise ValueError("entry must not be blank")
+    if len(word) != len(word.strip()) or any(ch.isspace() for ch in word):
+        raise ValueError("entry must be a single word with no whitespace")
+    if not (MIN_LEN <= len(word) <= MAX_LEN):
+        raise ValueError(f"entry must be {MIN_LEN}-{MAX_LEN} chars, got {len(word)}")
+    if not word.isalpha():
+        raise ValueError("entry must be a dictionary word: letters only")
+    return word
+
+
+def write_entry(word, path=OUTPUT_PATH):
+    """Validate and write the word to the output path, returning the path."""
+    checked = validate_word(word)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(checked)
+    return path
 
 
 def main():
-    os.makedirs("/output", exist_ok=True)
-    with open("/output/entry.txt", "w", encoding="utf-8") as f:
-        f.write(WORD)
+    path = write_entry(WORD)
+    print(f"Wrote {len(WORD)} chars to {path}")
 
 
 if __name__ == "__main__":
